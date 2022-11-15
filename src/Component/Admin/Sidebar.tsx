@@ -2,18 +2,44 @@ import React from 'react'
 import styled from "styled-components"
 import pic from "./23.jpg"
 import { Link, NavLink } from "react-router-dom"
-import { AiFillHome } from 'react-icons/ai';
-import {SideBarItem }from "./RouterSide"
+import { AiFillHome, AiOutlineConsoleSql } from 'react-icons/ai';
+import { SideBarItem } from "./RouterSide"
+import { useRecoilValue, useRecoilState } from "recoil"
+import { users, walltet } from "../Global/Globastate"
+import axios from "axios"
 
 
-function Sidebar() {
+function Sidebar()
+{
+    const user = useRecoilValue(users)
+    console.log("myuser wallet", user._id)
+    const userWallet = useRecoilValue(walltet)
+    const [userData, setUserData] = useRecoilState(users)
+    const [viewWallet, setviewWallet] = useRecoilState(walltet)
+     let url = "http://localhost:5050"
+    const getWallet = async() =>
+    {
+        await axios.get(`${url}/api/wallet/${user._id}/userwallet`).then((res) =>
+        {
+            setviewWallet(res.data.data)
+            console.log("viewdwallter", viewWallet)
+
+        })
+    }
+
+    React.useEffect(() =>
+    {
+        getWallet()
+    },[])
+    console.log("view wallet",userWallet)
+    console.log(userWallet?.wallet[0]?.totalbalance)
   return (
       <Container>
           <UserHold>
-              <ImgHold src={pic } />
+              <ImgHold src={pic } />    
               <Deatail>
                   <Dame>
-                      Edwin Rams 
+                      {user.fullName}
                   </Dame>
                   <Demail>
                       @edwinadmin
@@ -25,7 +51,7 @@ function Sidebar() {
 
            <MyAcct>
                   <Balance>
-                      ₦0.00
+                    ₦{userWallet?.wallet[0]?.totalbalance}
                   </Balance>
                   <ConAc>
                       Account Balance
@@ -61,7 +87,25 @@ function Sidebar() {
               }
             
            
-              
+                
+                          
+              <Navv
+                 
+              >
+                  <Icont>
+                     
+                  </Icont>
+                  <IconCont
+                      onClick={() =>
+                      {
+                          setUserData(null)
+                  }}
+                  >
+                    Log Out
+                  </IconCont>
+                 
+               </Navv>
+             
               
           </ConNav>
           

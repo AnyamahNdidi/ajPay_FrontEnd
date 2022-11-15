@@ -16,7 +16,7 @@ export const SideBarItem: NavCon[] = [
     {
         name: "Home",
         icon: (prop: IconBaseProps) => <AiFillHome />,
-        to:"/dash"
+        to:"/"
         
     },
     {

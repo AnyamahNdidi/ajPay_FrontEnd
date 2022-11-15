@@ -1,8 +1,54 @@
 import React from 'react'   
 import styled from "styled-components"
 import pic from "./ggg.png"
+import * as yup from "yup"
+import {useForm} from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios"
+import Swal from 'sweetalert2'
+import {useNavigate} from "react-router-dom"
 
-function ForgetPass() {
+function ForgetPass()
+{
+  
+    const navigation = useNavigate()
+
+    const schema = yup.object().shape({
+
+        email: yup.string().required("enter your email"),
+    })
+
+    const {register, handleSubmit, formState:{errors},reset } = useForm({
+        resolver: yupResolver(schema),
+    })
+    
+    let url = "http://localhost:5050"
+
+  const forgetHandler = handleSubmit(async(data) =>
+  {
+      
+    console.log(data)
+    try
+    {
+      await axios.post(`${url}/api/user/forgot`, data).then((res) =>
+      {
+        console.log(res)
+         Swal.fire(
+                 'Good job!',
+                'email sent',
+                'success'
+            )
+      })
+      
+    } catch (error)
+    {
+      console.log("some thing went wrong", error)
+      
+    }
+
+    })
+
+  
   return (
       <Cobtainer>
           <MainCard>
@@ -10,19 +56,19 @@ function ForgetPass() {
               </ImgForge>
 
         <ContentFor>
-          <Myholder>
+          <Myholder onSubmit={forgetHandler}>
                   <PassCon>
                     Forgot Password?
                  </PassCon>
                   <DisPass>
                     Enter the email address assiocaited with your account
                  </DisPass>
-                     <InpuCo placeholder='e-mail'/>
-            
+            <InpuCo placeholder='e-mail'  {...register("email")} />
+            <Error>{ errors?.email && "please provide emal"}</Error>
             
                 
           <ButtonCon>
-             <Dbutton>
+             <Dbutton type='submit'>
                               Send
                           </Dbutton>
             
@@ -37,7 +83,12 @@ function ForgetPass() {
 
 export default ForgetPass
 
-const Myholder = styled.div`
+const Error  = styled.div`
+color:red;
+margin-top:-5px;
+`
+
+const Myholder = styled.form`
 width:100%;
 height:auto;
 align-items:center;
@@ -116,7 +167,7 @@ align-items:center;
     }
 `
 
-const Dbutton = styled.div`
+const Dbutton = styled.button`
   height:40px;
   width:120px;
   background-color: black;
@@ -235,4 +286,10 @@ const Cobtainer = styled.div`
   display:flex;
   justify-content:center;
   align-items:center;
+
+  @media screen and (max-width: 600px) {
+   
+     padding-top:20px;
+     padding-bottom:5px;
+    }
 `

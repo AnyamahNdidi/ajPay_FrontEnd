@@ -1,10 +1,55 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useNavigate} from "react-router-dom"
+import * as yup from "yup"
+import {useForm} from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios"
+import Swal from 'sweetalert2'
 
 function SignUp()
 {
-    const navigation = useNavigate()
+    const navigate = useNavigate()
+
+    const schema = yup.object().shape({
+        fullName: yup.string().required("enter your fullname"),
+        userName: yup.string().required("enter your userName"),
+        email: yup.string().required("enter your email"),
+        password: yup.string().required("password is required"),
+        confirm: yup.string().oneOf([yup.ref("password"), null], "password don't match")
+    })
+
+    const {register, handleSubmit, formState:{errors},reset } = useForm({
+        resolver: yupResolver(schema),
+    })
+    
+    let url = "http://localhost:5050"
+
+    const registerNow = handleSubmit(async(data) =>
+    {
+        console.log(data)
+
+        await axios.post(`${url}/api/user/create`, data).then( async (res) =>
+        {
+            await axios.post(`${url}/api/wallet/${res.data.data._id}/create`).then((res) =>
+            {
+               Swal.fire(
+                 'Good job!',
+                'registration sucessful',
+                'success'
+                )
+                navigate("/verify")
+          })
+
+           
+            
+        }).catch((err)=>{console.log(err)})
+     
+    })
+
+
+
+
   return (
       <Cobtainer>
           <MainCard>
@@ -12,23 +57,37 @@ function SignUp()
                   ajWallet
               </LogoHolder>
               <InputHoleder>
-                  <MainHolder>
+                  <MainHolder onSubmit={registerNow}>
                       <Input
                           placeholder='Full Name'
+                          {...register("fullName")}
                       />
+                      <Error>{ errors?.fullName && "please provide emal"}</Error>
                       <Input
                           placeholder='User Name'
+                          {...register("userName")}
                       />
+                      <Error>{ errors?.userName && "please provide emal"}</Error>
                       <Input
                           placeholder='E-mail'
+                          {...register("email")}
                       />
+                      <Error>{ errors?.email && "please provide emal"}</Error>
                       <Input
                           placeholder='password'
+                          {...register("password")}
                       />
+                      <Error>{ errors?.password && "please provide password"}</Error>
+                      <Input
+                          placeholder='confirm Password'
+                          {...register("confirm")}
+                      />
+
+                      <Error>{ errors?.confirm && "email did not match"}</Error>
                       
 
                       <ButtonHolder>
-                          <Dbutton>
+                          <Dbutton type="submit">
                               Sign Up
                           </Dbutton>
                           
@@ -44,7 +103,7 @@ function SignUp()
                       <Myclick
                           onClick={() =>
                           { 
-                              navigation("/signin")
+                             navigate("/signin")
                       }}>
                           Log In
                       </Myclick>
@@ -60,7 +119,12 @@ function SignUp()
 
 export default SignUp
 
-const Dbutton = styled.div`
+const Error  = styled.div`
+color:red;
+margin-top:-5px;
+`
+
+const Dbutton = styled.button`
   height:100%;
   width:140px;
   background-color: black;
@@ -124,7 +188,7 @@ cursor:pointer;
 `
 
 
-const MainHolder = styled.div`
+const MainHolder = styled.form`
   width: 85%;
   height:100%; 
 `
@@ -141,7 +205,8 @@ font-size:25px;
 `
 const InputHoleder = styled.div`
 width:100%;
-height:280px;
+height:auto;
+margin-bottom:10px;
 display:flex;
 justify-content: center;
 align-items: center;
@@ -154,11 +219,12 @@ align-items:center;
 `
 
 const MainCard = styled.div`
-height:400px;
+height:auto;
 width:350px;
 background-color:#fff0dd;
 display:flex;
 flex-direction:column;
+padding-button:20px;
 
 @media screen and (max-width: 600px) {
      width:90%;

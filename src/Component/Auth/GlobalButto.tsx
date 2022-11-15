@@ -10,13 +10,13 @@ interface Dprops
 
 const GlobalButto:React.FC<Dprops> = ({title, wt, bbr}) => {
   return (
-      <Button wt={wt} bbr={bbr}>{title }</Button>
+      <Button wt={wt} bbr={bbr} type="submit">{title }</Button>
   )
 }
 
 export default GlobalButto
 
-const Button = styled.div<{ wt: string; bbr:string }>`
+const Button = styled.button<{ wt: string; bbr:string }>`
   height:45px;
   width:${(props)=> props.wt};
   background-color: black;

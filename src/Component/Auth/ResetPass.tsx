@@ -1,29 +1,82 @@
 import React from 'react'
 import styled from "styled-components"
 import pic from "./dcon.png"
+import * as yup from "yup"
+import {useForm} from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios"
+import Swal from 'sweetalert2'
+import {useNavigate,useParams} from "react-router-dom"
 
-function ResetPass() {
+function ResetPass()
+{
+  const navigation = useNavigate()
+  const { id } = useParams()
+  console.log("this is my id",id)
+
+    const schema = yup.object().shape({
+
+      password: yup.string().required("enter your email"),
+      confirm: yup.string().oneOf([yup.ref("password"), null], "password don't match")
+    })
+
+    const {register, handleSubmit, formState:{errors},reset } = useForm({
+        resolver: yupResolver(schema),
+    })
+    
+    let url = "http://localhost:5050"
+
+  const resetPassWord = handleSubmit(async(data) =>
+  {
+    console.log(data)
+    const {password} = data
+    try
+    {
+      await axios.post(`${url}/api/user/reset/${id}`, {password}).then((res) =>
+      {
+        console.log(res)
+         Swal.fire(
+                 'Good job!',
+                'reset sucessful',
+                'success'
+            )
+
+        
+      })
+    } catch (error)
+    {
+      console.log("something went wrong", error)
+    }
+  })
+
   return (
          <Cobtainer>
           <MainCard>
-              <ImgForge src={pic}>
-              </ImgForge>
+              <ImgForge src={pic}/>
+              
 
         <ContentFor>
-          <Myholder>
+          <Myholder onSubmit={resetPassWord}>
                   <PassCon>
                     Change password
                  </PassCon>
-                 
-                 
-                 
-                     <InpuCo placeholder='New Password'/>
-                     <InpuCo placeholder='confirm password'/>
-            
+              
+            <InpuCo placeholder='New Password'
+              
+                               {...register("password")}
+                      />
+                      <Error>{ errors?.password && "please provide password"}</Error>
+                      <Input
+                          placeholder='confirm Password'
+                          {...register("confirm")}
+                      />
+
+                      <Error>{ errors?.confirm && "password did not match"}</Error>
+                      
             
                 
           <ButtonCon>
-             <Dbutton>
+             <Dbutton type='submit'>
                               Submit
                           </Dbutton>
             
@@ -38,8 +91,12 @@ function ResetPass() {
 
 export default ResetPass
 
+const Error  = styled.div`
+color:red;
+margin-top:-5px;
+`
 
-const Myholder = styled.div`
+const Myholder = styled.form`
 width:100%;
 height:auto;
 align-items:center;
@@ -96,6 +153,7 @@ object-fit:cover;
 @media screen and (max-width: 600px) {
      width:90%;
      margin-bottom:10px;
+     height:350px;
     
     }
 `
@@ -111,13 +169,16 @@ align-items:center;
 
 
 
+
 @media screen and (max-width: 600px) {
      width:90%;
+     height:230px;
+     justify-content:none;
     
     }
 `
 
-const Dbutton = styled.div`
+const Dbutton = styled.button`
   height:40px;
   width:120px;
   background-color: black;
@@ -222,7 +283,7 @@ justify-content:space-around;
 
 @media screen and (max-width: 600px) {
      width:90%;
-     height auto; 
+     height 600px; 
      padding-top:20px;
      padding-bottom:20px;
     }
@@ -236,4 +297,10 @@ const Cobtainer = styled.div`
   display:flex;
   justify-content:center;
   align-items:center;
+
+  @media screen and (max-width: 600px) {
+   
+     padding-top:20px;
+     padding-bottom:5px;
+    }
 `

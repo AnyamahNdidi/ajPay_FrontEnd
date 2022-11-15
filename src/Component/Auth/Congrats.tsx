@@ -3,8 +3,23 @@ import styled from 'styled-components'
 import pic from "./gi.png"
 import pic2 from "./3.png"
 import GlobalButto from './GlobalButto'
+import { useParams, Link } from "react-router-dom"
+import axios from "axios"
 
-const Congrats = () => {
+const Congrats = () =>
+{
+  const { id } = useParams()
+  const url:string = `http://localhost:5050`
+  
+  const verifyUser = async () =>
+  {
+    await axios.get(`${url}/api/user/${id}`)
+  }
+
+  React.useEffect(() =>
+  {
+    verifyUser()
+  },[])
   return (
       <Cobtainer>
           <MainCard>
@@ -16,7 +31,9 @@ const Congrats = () => {
           <MyconImage src={pic2} />
           <Title>Welcome on board!</Title>
           <Contentli>Congratulations your email has been verify</Contentli>
-          <GlobalButto title="Continue" wt="200px" bbr="10px" />
+          <Link to="/signin" style={{ textDecoration: "none" }}>
+            <GlobalButto title="Continue" wt="200px" bbr="10px" />
+            </Link>
         </Content>
           </MainCard>  
      </Cobtainer>
@@ -53,7 +70,7 @@ flex-direction:column;
 `
 
 const Dark = styled.div`
-background-color:rgba(0,0,0,0.2);
+
 position:absolute;
 top:0;
 width:100%;

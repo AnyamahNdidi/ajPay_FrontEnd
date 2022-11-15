@@ -1,10 +1,60 @@
 import React from 'react'
 import styled from "styled-components"
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+import * as yup from "yup"
+import {useForm} from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios"
+import Swal from 'sweetalert2'
+import { useRecoilState } from "recoil"
+import {users} from "../Global/Globastate"
+
 
 const SignIn = () =>
 {
-    const navigation = useNavigate()
+    const navigate = useNavigate();
+
+    const [userData, setUserData] = useRecoilState(users)
+    console.log("current user", userData)
+
+
+
+    const schema = yup.object().shape({
+        email: yup.string().required("enter your email"),
+        password: yup.string().required("password is required"),
+       
+    })
+
+    const {register, handleSubmit, formState:{errors},reset } = useForm({
+        resolver: yupResolver(schema),
+    })
+    
+    let url = "http://localhost:5050"
+
+    const signIn = handleSubmit(async(data) =>
+    {
+        console.log(data)
+        try
+        {
+              await axios.post(`${url}/api/user/login`, data).then((res) =>
+              {
+            setUserData(res.data.data)
+            Swal.fire(
+                 'Good job!',
+                'Login  sucessful',
+                'success'
+            )
+            navigate("/")
+        }).catch((err)=>{console.log(err)})
+        } catch (error)
+        {
+            console.log( "something went wrong", error   )
+        }
+
+      
+     
+    })
   return (
        <Cobtainer>
           <MainCard>
@@ -12,19 +62,22 @@ const SignIn = () =>
                   ajWallet
               </LogoHolder>
               <InputHoleder>
-                  <MainHolder>
+                  <MainHolder  onSubmit={signIn}>
                       
                       <Input
                           placeholder='E-mail'
+                            {...register("email")}
                       />
+                      <Error>{ errors?.email && "please provide emal"}</Error>
                       <Input
                           placeholder='password'
+                          {...register("password")}
                       />
-                      
+                       <Error>{ errors?.password && "please provide emal"}</Error>
                       <ForgteCon
                           onClick={() =>
                           {
-                            navigation("/forget")  
+                            navigate("/forget")  
                       }}
                       >
                           Forgot your password?
@@ -32,7 +85,7 @@ const SignIn = () =>
 
 
                       <ButtonHolder>
-                          <Dbutton>
+                          <Dbutton type='submit'>
                               Log In
                           </Dbutton>
                           
@@ -48,7 +101,7 @@ const SignIn = () =>
                       <Myclick
                           onClick={() =>
                           {
-                              navigation("/signup")
+                              navigate("/signup")
                       }}>
                           Sign Up
                       </Myclick>
@@ -64,6 +117,11 @@ const SignIn = () =>
 
 export default SignIn
 
+const Error  = styled.div`
+color:red;
+margin-top:-5px;
+`
+
 const ForgteCon = styled.div`
  color:red;
  display:flex;
@@ -74,7 +132,7 @@ const ForgteCon = styled.div`
  margin-bottom:10px;
 `
 
-const Dbutton = styled.div`
+const Dbutton = styled.button`
   height:100%;
   width:140px;
   background-color: black;
@@ -138,7 +196,7 @@ cursor:pointer;
 `
 
 
-const MainHolder = styled.div`
+const MainHolder = styled.form`
   width: 85%;
   height:180px; 
  

@@ -3,10 +3,48 @@ import GlobalButto from '../Auth/GlobalButto'
 
 import styled from 'styled-components'
 import { matchRoutes } from 'react-router-dom'
+import * as yup from "yup"
+import {useForm} from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios"
+import Swal from 'sweetalert2'
+import { useRecoilState, useRecoilValue } from "recoil"
+import { useNavigate } from "react-router-dom"
+import {account} from "../Global/Globastate"
+
 
 function Trans()
 {
-  const [show, setShow] = React.useState<boolean>(false)
+  const [show, setShow] = React.useState<boolean>(true)
+
+  const [acc, setAcct] = useRecoilState(account)
+  const userAccount  = useRecoilValue(account)
+
+  const navigate = useNavigate()
+
+    const schema = yup.object().shape({
+        accountSearch: yup.string().required("please provide account number"),
+    })
+
+    const {register, handleSubmit, formState:{errors},reset } = useForm({
+        resolver: yupResolver(schema),
+    })
+    
+    let url = "http://localhost:5050"
+
+  const getAccount = handleSubmit(async (data) =>
+  {
+    console.log("the input i put", data)
+    const  {accountSearch} = data
+    await axios.get(`${url}/api/user/mysearch/user/one?accountNumber=${accountSearch}`).then((res) =>
+    {
+      console.log("this is account number", res)
+    })
+      
+    })
+ 
+
+
   return (
     <Container>
       <Wrapper>
@@ -16,8 +54,11 @@ function Trans()
         <Decs>
           Please Provide Account number Number
         </Decs>
-        <ConHoLDER>
-          <InpuCo placeholder='Account Number' />
+        <ConHoLDER onSubmit={getAccount}>
+          <InpuCo placeholder='Account Number'
+            {...register("accountSearch")}
+            required
+          />
          <GlobalButto title="Search" wt="150px" bbr="5px" />
           
         </ConHoLDER>
@@ -63,6 +104,11 @@ function Trans()
 }
 
 export default Trans
+
+const Error  = styled.div`
+color:red;
+margin-top:-5px;
+`
 
 const AccontHolder1 = styled.div`
 width:80%;
@@ -217,7 +263,7 @@ margin-top:14px;
 }
 `
 
-const ConHoLDER = styled.div`
+const ConHoLDER = styled.form`
  width:85%;
  height:70px;
  

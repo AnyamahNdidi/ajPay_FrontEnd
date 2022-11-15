@@ -17,9 +17,9 @@ const MyHome = () => {
             <Route path="/signup" element={<SignUp/>}/>
             <Route path="/signin" element={<SignIn/>}/>
             <Route path="/forget" element={<ForgetPass/>}/>
-            <Route path="/reset" element={<ResetPass/>}/>
+            <Route path="/api/user/reset/:id" element={<ResetPass/>}/>
             <Route path="/verify" element={<Verify/>}/>
-            <Route path="/congrat" element={<Congrats/>}/>
+            <Route path="/api/user/:id" element={<Congrats/>}/>
       </Routes>
     </>
   )

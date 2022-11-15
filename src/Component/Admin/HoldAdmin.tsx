@@ -17,7 +17,7 @@ function HoldAdmin() {
         
           <Container>
               <Routes>
-                  <Route path='/dash' element = {<HomeAdmin  cl=""/>} />
+                  <Route path='/' element = {<HomeAdmin  cl=""/>} />
                   <Route path='/account' element = {<AccounDe/>} />
                   <Route path='/trans' element = {<Trans/>} />
                   <Route path='/notifi' element = {<Notifications/>} />

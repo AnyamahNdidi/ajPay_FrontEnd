@@ -222,7 +222,7 @@ const Con1 = styled.div`
 `
 const Con2 = styled.div`
   width:50%;
-  height:calc(100vh - 60px);
+  height:100%;
  
   display:flex;
  
@@ -241,7 +241,7 @@ const Con2 = styled.div`
 
 const Cobtainer = styled.div`
   width:100%;
-  height:100%;
+ 
   min-height:calc(100vh - 60px) ;
   background-color:#ff9505;
   display:flex;
